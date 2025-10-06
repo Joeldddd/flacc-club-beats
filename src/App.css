@@ -1,38 +1,131 @@
-.App {
-  text-align: center;
+:root {
+  --color-dark-primary: #121212; 
+  --color-dark-secondary: #212121; 
+  --color-text-light: #E0E0E0; 
+  
+  --color-accent: #177885; 
+  --color-accent-dark: #00A3B5; 
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+body {
+  
+  font-family: 'Poppins', sans-serif; 
+  background-color: var(--color-dark-primary);
+  color: var(--color-text-light); 
+  min-height: 100vh;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
+#root, .App {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.navbar, footer {
+    background-color: var(--color-dark-secondary) !important;
+    border-bottom: 1px solid #444; 
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.navbar-brand,
+.nav-link {
+  font-weight: bold !important;
+  color: var(--color-text-light) !important;
+  transition: color 0.3s;
+  letter-spacing: 0.5px; 
 }
+
+.nav-link:hover, .nav-link.active {
+  color: var(--color-accent) !important; 
+  text-shadow: 0 0 5px rgba(0, 224, 255, 0.4); 
+}
+
+.homepage-hero {
+    background-color: var(--color-dark-secondary) !important;
+    padding-top: 8rem !important; 
+    padding-bottom: 8rem !important; 
+    border-bottom: 3px solid var(--color-accent); 
+}
+
+.homepage-hero h1 {
+    font-size: 4.5rem;
+    letter-spacing: 5px; 
+    text-transform: uppercase;
+    color: var(--color-accent); 
+    text-shadow: 0 0 15px rgba(0, 224, 255, 0.7); 
+}
+
+.homepage-hero .btn-danger { 
+    background-color: var(--color-accent) !important;
+    border-color: var(--color-accent) !important;
+    color: var(--color-dark-primary) !important; 
+    font-weight: bold;
+}
+.homepage-hero .btn-outline-light {
+    border-color: var(--color-accent) !important;
+    color: var(--color-accent) !important;
+    font-weight: bold;
+   } 
+.card {
+    background-color: var(--color-dark-secondary) !important;
+    color: var(--color-text-light) !important;
+    border: 1px solid #444; 
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    height: 100%; 
+}
+
+.card:hover {
+    transform: translateY(-8px); 
+    box-shadow: 0 15px 30px rgba(0, 224, 255, 0.3); 
+}
+
+.card .btn-primary {
+    background-color: var(--color-accent) !important;
+    border-color: var(--color-accent) !important;
+    color: var(--color-dark-primary) !important; 
+    font-weight: bold;
+}
+
+.alert-success {
+    background-color: rgba(0, 224, 255, 0.2);
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+}
+
+footer {
+    padding-top: 2rem !important;
+    padding-bottom: 2rem !important;
+}
+
+.list-unstyled svg {
+    vertical-align: middle; 
+    color: var(--color-accent); 
+}
+
+
+.list-unstyled a {
+    color: var(--color-text-light) !important; 
+    transition: color 0.3s;
+}
+
+.list-unstyled a:hover {
+    color: var(--color-accent) !important; 
+}
+
+.text-white.mx-2.fs-4 svg {
+    color: var(--color-accent) !important; 
+}
+
+.text-white.mx-2.fs-4:hover svg {
+    color: var(--color-text-light) !important; 
+}
+
+
+
+
+
+
+
+
+
+
+
