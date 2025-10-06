@@ -1,14 +1,13 @@
 import React from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
-// Importa los íconos de la librería que acabas de instalar (usaremos 'fa' de Font Awesome)
-import { FaPhone, FaEnvelope, FaInstagram } from 'react-icons/fa'; 
+import { FaPhone, FaEnvelope, FaInstagram } from 'react-icons/fa6'; 
 
 const Footer = () => (
     <footer className="bg-dark text-white text-center py-4 mt-5">
       <Container>
         <Row className="justify-content-center align-items-center">
           
-          {/* Columna 1: Información de Contacto */}
+        
           <Col md={4} className="mb-3 mb-md-0 text-md-start">
             <h5 className="fw-bold" style={{ color: 'var(--color-accent)' }}>Contacto FLACC Club</h5>
             <ul className="list-unstyled">
@@ -27,13 +26,13 @@ const Footer = () => (
             </ul>
           </Col>
 
-          {/* Columna 2: Derechos de Autor */}
+         
           <Col md={4} className="text-center mb-3 mb-md-0">
             <p className="mb-0">&copy; {new Date().getFullYear()} FLACC Club Beats.</p>
             <small className="text-muted">Desarrollado con React y Firebase.</small>
           </Col>
           
-          {/* Columna 3: Redes Sociales (Ejemplo) */}
+         
           <Col md={4} className="text-md-end">
              <h5 className="fw-bold" style={{ color: 'var(--color-accent)' }}>Síguenos</h5>
              <a href="https://instagram.com/tuusuario" target="_blank" rel="noopener noreferrer" 
@@ -43,7 +42,7 @@ const Footer = () => (
                              onMouseOver={e => e.currentTarget.style.color='white'}
                              onMouseOut={e => e.currentTarget.style.color='var(--color-accent)'} />
              </a>
-             {/* Aquí podrías añadir más íconos como FaTwitter, FaFacebook, etc. */}
+            
           </Col>
 
         </Row>
