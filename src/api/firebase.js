@@ -1,103 +1,157 @@
+/* global __app_id, __initial_auth_token */
 import { initializeApp } from "firebase/app";
 import { 
-  getFirestore, 
-  collection, 
-  getDocs, 
-  doc, 
-  getDoc, 
-  addDoc, 
-  updateDoc, 
-  deleteDoc 
+    getAuth, 
+    signInAnonymously, 
+    onAuthStateChanged, 
+    signInWithCustomToken 
+} from "firebase/auth";
+import { 
+    getFirestore, 
+    collection, 
+    addDoc, 
+    doc, 
+    getDoc, 
+    query, 
+    onSnapshot 
 } from "firebase/firestore";
+import { firebaseConfig, appId as configAppId } from "../config/firebase-config"; 
 
-const firebaseConfig = {
-  apiKey: "AIzaSyAlimfwPD8xXGoDh5-H1aaOSRPS5P9G0", 
-  authDomain: "flacc-club-beats.firebaseapp.com",
-  projectId: "flacc-club-beats",
-  storageBucket: "flacc-club-beats.firebaseapp.com",
-  messagingSenderId: "553378684245",
-  appId: "1:553378684245:web:7691741976e7a5a5b263dc"
-};
-
-
+// --- 1. Inicialización ---
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
+export const auth = getAuth(app);
+export const appId = configAppId;
 
-const beatsCollectionRef = collection(db, "Beats");
-/**
- * @returns {Array}
- */
-export const getBeats = async () => {
-  try {
-    const querySnapshot = await getDocs(beatsCollectionRef);
-    
-    const beatsList = querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
 
-    return beatsList;
-    
-  } catch (error) {
-    console.error("Error al obtener los beats: ", error);
-    return []; 
-  }
-};
-/**
- * @param {string} id 
- * @returns {Object|null}
- */
-export const getBeatById = async (id) => {
-  try {
-    const beatRef = doc(db, "Beats", id);
-    const docSnap = await getDoc(beatRef);
+let isInitialized = false;
 
-    if (docSnap.exists()) {
-      return { id: docSnap.id, ...docSnap.data() };
-    } else {
-      console.log("No se encontró el beat con ID:", id);
-      return null;
+
+export const authenticateUser = async () => {
+    try {
+        
+        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+            await signInWithCustomToken(auth, __initial_auth_token);
+            console.log("Firebase: Autenticación con token exitosa.");
+        } else {
+            
+            await signInAnonymously(auth);
+            console.log("Firebase: Autenticación anónima exitosa.");
+        }
+        isInitialized = true;
+        return true;
+    } catch (error) {
+        console.error("Firebase: Error al autenticar/inicializar.", error);
+        isInitialized = false;
+        return false;
     }
-  } catch (error) {
-    console.error("Error al obtener el beat por ID: ", error);
-    return null;
-  }
 };
+
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        console.log("Firebase: Usuario autenticado (UID:", user.uid, ")");
+    } else {
+        console.log("Firebase: Ningún usuario autenticado.");
+    }
+});
+
+
+
+const getPublicCollectionRef = (collectionName) => {
+    if (!isInitialized) {
+        
+        console.warn("Firestore no está inicializado. Asegúrate de que authenticateUser() fue llamado.");
+    }
+    
+    const currentAppId = typeof __app_id !== 'undefined' && __app_id ? __app_id : appId; 
+
+    
+    return collection(db, "artifacts", currentAppId, "public", "data", collectionName);
+};
+
+
+
 /**
- * @param {Object} beatData 
- * @returns {string} 
+ * 
+ * @param {object} beatData 
+ * @returns {Promise<string>} 
  */
 export const addBeat = async (beatData) => {
-  try {
-    const docRef = await addDoc(beatsCollectionRef, beatData);
-    return docRef.id;
-  } catch (error) {
-    console.error("Error al añadir el beat: ", error);
-    throw new Error("No se pudo crear el beat.");
-  }
+    try {
+        const docRef = await addDoc(getPublicCollectionRef("beats"), {
+            ...beatData,
+            createdAt: new Date(),
+        });
+        return docRef.id;
+    } catch (e) {
+        console.error("Error añadiendo documento beat:", e);
+        throw e;
+    }
 };
+
 /**
+ *
+ * @param {object} suscriptorData 
+ * @returns {Promise<string>} 
+ */
+export const addSuscriptor = async (suscriptorData) => {
+    try {
+        const docRef = await addDoc(getPublicCollectionRef("suscriptores"), {
+            ...suscriptorData,
+            subscribedAt: new Date(),
+        });
+        return docRef.id;
+    } catch (e) {
+        console.error("Error añadiendo suscriptor:", e);
+        throw e;
+    }
+};
+
+/**
+ *
  * @param {string} id 
- * @param {Object} updatedFields
+ * @returns {Promise<object|null>} 
  */
-export const updateBeat = async (id, updatedFields) => {
-  try {
-    const beatRef = doc(db, "Beats", id);
-    await updateDoc(beatRef, updatedFields);
-  } catch (error) {
-    console.error(`Error al actualizar el beat ${id}: `, error);
-    throw new Error(`No se pudo actualizar el beat con ID ${id}.`);
- }
+export const getBeatById = async (id) => {
+    try {
+        
+        const collectionRef = getPublicCollectionRef("beats");
+        const docRef = doc(collectionRef, id);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+            return { id: docSnap.id, ...docSnap.data() };
+        } else {
+            return null;
+        }
+    } catch (e) {
+        console.error("Error obteniendo beat por ID:", e);
+        throw e;
+    }
 };
-/**
- * @param {string} id
- */
-export const deleteBeat = async (id) => {
-  try {
-    const beatRef = doc(db, "Beats", id);
-    await deleteDoc(beatRef);
-  } catch (error) {
-    console.error(`Error al eliminar el beat ${id}: `, error);
-    throw new Error(`No se pudo eliminar el beat con ID ${id}.`);
-  }
+
+
+export const getBeatsCollectionQuery = () => {
+    return query(getPublicCollectionRef("beats"));
 };
+
+export const isDbInitialized = () => isInitialized;
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+    
+
+  
+

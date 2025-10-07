@@ -1,141 +1,141 @@
 import React, { useState } from 'react';
-import { useForm } from 'react-hook-form'; 
-import { Container, Form, Button, Alert, Row, Col, Card } from 'react-bootstrap';
+import { Container, Form, Button, Card, Alert } from 'react-bootstrap';
+import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import { addBeat } from '../api/firebase'; 
+import { addBeat } from '../api/firebase';
+import { FaUpload } from 'react-icons/fa6';
 
-const CrearBeat = () => {
+function ComprarBeats() {
+  const { register, handleSubmit, formState: { errors }, reset } = useForm();
   const navigate = useNavigate();
-  const { 
-    register, 
-    handleSubmit, 
-    formState: { errors, isSubmitting },
-    reset 
-  } = useForm({
-    
-    defaultValues: {
-      nombre: '',
-      precio: '',
-      genero: 'Trap', 
-      imagenURL: '',
-      descripcion: ''
-    }
-  });
-
-  const [message, setMessage] = useState(null); 
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState(null);
 
   const onSubmit = async (data) => {
+    setLoading(true);
     setMessage(null);
     try {
+  
       const beatData = {
         ...data,
-        Precio: parseFloat(data.precio),
-        precio: undefined 
+      
+        precio: parseFloat(data.precio), 
       };
 
       const newId = await addBeat(beatData);
-    
-      setMessage({ type: 'success', text: `Beat "${beatData.nombre}" creado con ID: ${newId}` });
-      reset(); 
       
-      setTimeout(() => navigate('/beats'), 2000); 
+      setMessage({ type: 'success', text: `¡Beat "${data.nombre}" subido con éxito! ID: ${newId}` });
+      reset();
+
+      setTimeout(() => {
+        navigate('/beats');
+      }, 1500); 
 
     } catch (err) {
-      console.error(err);
-      setMessage({ type: 'danger', text: 'Error al guardar el beat. Revisa la consola y tus reglas de Firebase.' });
+      console.error("Error al añadir beat:", err);
+      setMessage({ type: 'danger', text: 'Error al subir el beat. Inténtalo de nuevo.' });
+    } finally {
+      setLoading(false);
     }
   };
 
-
   return (
     <Container className="my-5">
-      <Card className="shadow-lg p-4 mx-auto" style={{ maxWidth: '600px' }}>
-        <h1 className="text-center mb-4">¡Sube un Nuevo Beat a FLACC Club!</h1>
+      <Card className="p-4 shadow-lg" style={{ backgroundColor: 'var(--color-dark-secondary)' }}>
+        <Card.Body>
+          <h1 className="text-accent-neon mb-4 text-center">¡Sube un Nuevo Beat a FLACC Club!</h1>
+
+          {message && <Alert variant={message.type}>{message.text}</Alert>}
+
+          <Form onSubmit={handleSubmit(onSubmit)}>
+            
+          
+            <Form.Group className="mb-3">
+              <Form.Label className="text-light">Nombre del Beat</Form.Label>
+              <Form.Control 
+                type="text" 
+                placeholder="Ej: Trap Melancólico V3"
+                {...register("nombre", { required: "El nombre es obligatorio." })}
+                className="bg-dark text-light border-secondary"
+              />
+              {errors.nombre && <p className="text-danger">{errors.nombre.message}</p>}
+            </Form.Group>
+
         
-        {message && <Alert variant={message.type}>{message.text}</Alert>}
-
-        <Form onSubmit={handleSubmit(onSubmit)}>
-
-          <Form.Group className="mb-3" controlId="nombre">
-            <Form.Label>Nombre del Beat</Form.Label>
-            <Form.Control 
-              type="text"
-              placeholder="Ej: Trap Melancólico V3"
-              {...register('nombre', { required: "El nombre es obligatorio.", minLength: { value: 3, message: "Mínimo 3 caracteres." } })}
-            />
-            {errors.nombre && <span className="text-danger small">{errors.nombre.message}</span>}
-          </Form.Group>
-
-          <Row>
-            <Col md={6}>
-              <Form.Group className="mb-3" controlId="precio">
-                <Form.Label>Precio (USD)</Form.Label>
-                <Form.Control 
-                  type="number"
-                  step="0.01"
-                  placeholder="Ej: 29.99"
-                  {...register('precio', { 
+            <Form.Group className="mb-3">
+              <Form.Label className="text-light">Precio (USD)</Form.Label>
+              <Form.Control 
+                type="number" 
+                step="0.01" 
+                placeholder="Ej: 29.99"
+                {...register("precio", { 
                     required: "El precio es obligatorio.",
-                    min: { value: 1.00, message: "El precio debe ser al menos $1.00." },
-                    valueAsNumber: true 
-                  })}
-                />
-                {errors.precio && <span className="text-danger small">{errors.precio.message}</span>}
-              </Form.Group>
-            </Col>
+                    valueAsNumber: true,
+                    min: { value: 0.01, message: "El precio debe ser mayor a cero." }
+                })}
+                className="bg-dark text-light border-secondary"
+              />
+              {errors.precio && <p className="text-danger">{errors.precio.message}</p>}
+            </Form.Group>
 
-    
-            <Col md={6}>
-              <Form.Group className="mb-3" controlId="genero">
-                <Form.Label>Género</Form.Label>
-                <Form.Select 
-                  {...register('genero', { required: "Debes seleccionar un género." })}
-                >
-                  <option value="">Selecciona...</option>
-                  <option value="Trap">Trap</option>
-                  <option value="HipHop">Hip Hop</option>
-                  <option value="Reggaeton">Reggaeton</option>
-                  <option value="Lofi">Lofi</option>
-                </Form.Select>
-                {errors.genero && <span className="text-danger small">{errors.genero.message}</span>}
-              </Form.Group>
-            </Col>
-          </Row>
-          <Form.Group className="mb-3" controlId="imagenURL">
-            <Form.Label>URL de Imagen de Portada</Form.Label>
-            <Form.Control 
-              type="url"
-              placeholder="https://ejemplo.com/portada.jpg"
-              {...register('imagenURL', { 
-                required: "La URL de la imagen es obligatoria.",
-                pattern: { value: /^(ftp|http|https):\/\/[^ "]+$/, message: "Formato de URL inválido." } // Validación simple de URL
-              })}
-            />
-            {errors.imagenURL && <span className="text-danger small">{errors.imagenURL.message}</span>}
-          </Form.Group>
-        
-          <Form.Group className="mb-4" controlId="descripcion">
-            <Form.Label>Descripción del Beat</Form.Label>
-            <Form.Control 
-              as="textarea" 
-              rows={3} 
-              placeholder="Describe el ambiente, BPM y la instrumentación..."
-              {...register('descripcion', { required: "La descripción es obligatoria.", maxLength: { value: 500, message: "Máximo 500 caracteres." } })}
-            />
-            {errors.descripcion && <span className="text-danger small">{errors.descripcion.message}</span>}
-          </Form.Group>
-          <Button 
-            variant="primary" 
-            type="submit" 
-            className="w-100"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? 'Guardando...' : 'Guardar Beat en Catálogo'}
-          </Button>
-        </Form>
+            <Form.Group className="mb-3">
+              <Form.Label className="text-light">Género</Form.Label>
+              <Form.Select 
+                {...register("genero", { required: "Selecciona un género." })}
+                className="bg-dark text-light border-secondary"
+              >
+                <option value="">Selecciona un Género</option>
+                <option value="Trap">Trap</option>
+                <option value="Drill">Drill</option>
+                <option value="Reggaeton">Reggaetón</option>
+                <option value="HipHop">Hip Hop</option>
+              </Form.Select>
+              {errors.genero && <p className="text-danger">{errors.genero.message}</p>}
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label className="text-light">URL de Imagen de Portada</Form.Label>
+              <Form.Control 
+                type="url" 
+                placeholder="https://ejemplo.com/portada"
+                {...register("imagenURL")}
+                className="bg-dark text-light border-secondary"
+              />
+            </Form.Group>
+            <Form.Group className="mb-4">
+              <Form.Label className="text-light">Descripción del Beat</Form.Label>
+              <Form.Control 
+                as="textarea" 
+                rows={3} 
+                placeholder="Describe el ambiente, el BPM y la instrumentación..."
+                {...register("descripcion")}
+                className="bg-dark text-light border-secondary"
+              />
+            </Form.Group>
+
+            <Button 
+              variant="primary" 
+              type="submit" 
+              className="w-100" 
+              disabled={loading}
+              style={{ 
+                backgroundColor: 'var(--color-accent)', 
+                borderColor: 'var(--color-accent)', 
+                color: 'var(--color-dark-primary)',
+                fontWeight: 'bold' 
+              }}
+            >
+              <FaUpload className="me-2" /> {loading ? 'Subiendo...' : 'Guardar Beat en Catálogo'}
+            </Button>
+          </Form>
+        </Card.Body>
       </Card>
     </Container>
   );
-};
+}
 
-export default CrearBeat;
+export default ComprarBeats;
+
+ 
+  
+

@@ -1,70 +1,76 @@
-# Getting Started with Create React App
+FLACC Club Beats - Tienda de Instrumentales
+Esta aplicación web es una plataforma de comercio electrónico diseñada para que productores de música suban sus beats (instrumentales) a un catálogo centralizado y para que los usuarios puedan ver el listado, obtener detalles y suscribirse al newsletter. El catálogo se actualiza en tiempo real utilizando la base de datos Google Cloud Firestore.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+🛠️ Tecnologías Utilizadas
+Frontend: ReactJS
 
-## Available Scripts
+Lenguaje: JavaScript (ES6+)
 
-In the project directory, you can run:
+Estilado: CSS / (Si aplica: Bootstrap o Tailwind CSS)
 
-### `npm start`
+Base de Datos: Google Cloud Firestore (Real-time NoSQL Database)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Servicios de Despliegue: Vercel
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+🔗 Enlaces del Proyecto
+Recurso
 
-### `npm test`
+URL
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Repositorio GitHub
 
-### `npm run build`
+https://docs.github.com/es/repositories/creating-and-managing-repositories/quickstart-for-repositories
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Aplicación Desplegada (Vercel)
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+https://www.youtube.com/watch?v=yxLOBFXSkv0
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+⚙️ Configuración y Ejecución Local
+Para ejecutar esta aplicación en tu entorno local, sigue los siguientes pasos.
 
-### `npm run eject`
+Requisitos Previos
+Necesitas tener Node.js y npm (o yarn) instalados en tu sistema.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+1. Clonar el Repositorio
+Abre tu terminal y clona el proyecto:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+git clone [https://docs.github.com/es/repositories/creating-and-managing-repositories/quickstart-for-repositories](https://docs.github.com/es/repositories/creating-and-managing-repositories/quickstart-for-repositories)
+cd flacc-club-beats
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+2. Instalación de Dependencias
+Instala todas las dependencias del proyecto (incluyendo Firebase):
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+npm install
+# o si usas yarn
+# yarn install
 
-## Learn More
+3. Configuración de Firebase
+Para que la aplicación se conecte a la base de datos, debes tener la configuración de tu proyecto de Firebase en el archivo: src/config/firebase-config.js.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Asegúrate de que este archivo contenga tu configuración (la clave de API ya está corregida):
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+// src/config/firebase-config.js (Ejemplo)
+const localFirebaseConfig = {
+    apiKey: "AIzaSyAIimfwPD0xxGohDh5-Hlaa0SRPSS9P9G0L", 
+    authDomain: "flacc-club-beats.firebaseapp.com",
+    // ... otros campos
+};
+export const firebaseConfig = localFirebaseConfig;
 
-### Code Splitting
+⚠️ NOTA DE SEGURIDAD/FIREBASE: Si encuentras errores de conexión (Error: Configuración inválida o se queda en Loading...), verifica que las Reglas de Seguridad de tu base de datos en Firestore estén configuradas para permitir lecturas y escrituras públicas:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+// Reglas de Firestore
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /artifacts/{appId}/public/data/{collectionName}/{document=**} {
+      allow read, write: if true;
+    }
+  }
+}
 
-### Analyzing the Bundle Size
+4. Iniciar la Aplicación
+Ejecuta el proyecto en modo de desarrollo. Se abrirá en http://localhost:3000 (o un puerto similar).
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+npm start
+# o si usas yarn
+# yarn start
