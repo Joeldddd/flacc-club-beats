@@ -100,7 +100,7 @@ const BeatsPage = () => {
         );
     }
     
-    // Renderizado principal
+    
     return (
         <div className="container my-5">
             <h1 className="text-center text-info mb-4">Catálogo de FLACC Club Beats</h1>

@@ -17,7 +17,7 @@ import {
 } from "firebase/firestore";
 import { firebaseConfig, appId as configAppId } from "../config/firebase-config"; 
 
-// --- 1. Inicialización ---
+
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 export const auth = getAuth(app);
